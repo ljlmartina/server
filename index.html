@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>匿名提问箱</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f9f9f9; }
+    .container { max-width: 600px; margin: auto; }
+    textarea, input[type="submit"] {
+      width: 100%; padding: 10px; margin-top: 10px;
+    }
+    .question-box {
+      border: 1px solid #ccc; padding: 15px; background: #fff;
+      margin-top: 20px; border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>匿名提问箱</h1>
+    <form id="askForm">
+      <textarea id="questionInput" placeholder="在这里输入你的问题..." required></textarea>
+      <input type="submit" value="提交匿名问题">
+    </form>
+
+    <h2>已公开的问题与回答</h2>
+    <div id="qaList"></div>
+  </div>
+
+  <script>
+    async function loadQA() {
+      const res = await fetch('/api/questions');
+      const data = await res.json();
+      const qaList = document.getElementById('qaList');
+      qaList.innerHTML = '';
+      data.forEach(q => {
+        const box = document.createElement('div');
+        box.className = 'question-box';
+        box.innerHTML = `<strong>Q:</strong> ${q.q}<br><strong>A:</strong> ${q.a}`;
+        qaList.appendChild(box);
+      });
+    }
+
+    document.getElementById('askForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const q = document.getElementById('questionInput').value.trim();
+      if (q) {
+        await fetch('/api/questions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ q })
+        });
+        document.getElementById('questionInput').value = '';
+        alert('问题已提交！');
+        loadQA();
+      }
+    });
+
+    loadQA();
+  </script>
+</body>
+</html>

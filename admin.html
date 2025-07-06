@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>管理员后台 - 匿名提问箱</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f3f3f3; }
+    .container { max-width: 700px; margin: auto; }
+    .question-box {
+      border: 1px solid #aaa; padding: 15px; margin-top: 15px;
+      background: #fff; border-radius: 10px;
+    }
+    textarea, input[type="password"], input[type="submit"] {
+      width: 100%; padding: 10px; margin-top: 10px;
+    }
+    .answer-form textarea {
+      height: 60px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>管理员后台</h1>
+    <div id="loginForm">
+      <input type="password" id="password" placeholder="请输入管理员密码">
+      <input type="submit" value="登录" onclick="loadPending()">
+    </div>
+
+    <div id="pendingList"></div>
+  </div>
+
+  <script>
+    let token = '';
+
+    async function loadPending() {
+      const pwd = document.getElementById('password').value.trim();
+      const res = await fetch('/api/admin?pwd=' + encodeURI
